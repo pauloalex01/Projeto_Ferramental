@@ -1,4 +1,4 @@
-from .banco_de_dados import Database
+from database.banco_de_dados import Database
 
 class FerramentaRepository:
 

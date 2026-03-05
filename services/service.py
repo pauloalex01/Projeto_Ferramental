@@ -1,5 +1,5 @@
-from .repositories import  FerramentaRepository, MatriculaRepository, MovimentacaoRepository
-from .models import Ferramenta, Matricula, Movimentacao
+from repositories.repositories import  FerramentaRepository, MatriculaRepository, MovimentacaoRepository
+from models.models import Matricula, Movimentacao
 from datetime import datetime
 
 

@@ -12,7 +12,7 @@ def criar_codigo_barras(codigo):
     # Diretório base do projeto
     base_dir = os.path.dirname(os.path.abspath(__file__))
 
-    pasta_destino = os.path.join(base_dir, "barcodes")
+    pasta_destino = os.path.join(base_dir, "")
     os.makedirs(pasta_destino, exist_ok=True)
 
     # Criar código de barras

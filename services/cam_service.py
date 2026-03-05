@@ -1,8 +1,7 @@
 import time
-from database.repositories import *
-from interface.decoder_cam import Leitor_codigo
+from barcode.decoder_cam import Leitor_codigo
 from database.banco_de_dados import Database
-from database.service import *
+from services.service import *
 
 
 if __name__ == "__main__":
