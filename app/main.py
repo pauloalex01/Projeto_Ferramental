@@ -1,5 +1,5 @@
 import time
-from barcode.decoder_cam import Leitor_codigo
+from codigo_barras.decoder_cam import Leitor_codigo
 from database.banco_de_dados import Database
 from services.service import *
 
@@ -64,13 +64,12 @@ if __name__ == "__main__":
                 matricula = input("Digite a matrícula: ")
                 nome = input("Digite o nome: ")
                 busca = mat_service.cadastrar(matricula, nome)
-                print("Matrícula cadastrada.\n")
 
 
             elif sub == 2:
                 matricula = input("Digite a matrícula: ")
                 mat_service.remover(matricula)
-                print("Matrícula removida.\n")
+
 
             elif sub == 3:
                 matricula = input("Digite a matrícula: ")
@@ -80,7 +79,6 @@ if __name__ == "__main__":
             elif sub == 4:
                 matricula = input("Digite a matrícula: ")
                 mat_repo.desativar(matricula)
-                print("Matrícula desativada.\n")
 
 
         # ================= FERRAMENTA =================
@@ -104,12 +102,12 @@ if __name__ == "__main__":
                 ferramenta = input("Digite o código da ferramenta: ")
                 descricao = input("Digite a descrição: ")
                 ferr_service.cadastrar(ferramenta, descricao)
-                print("Ferramenta cadastrada.\n")
+
 
             elif sub == 2:
                 ferramenta = input("Digite o código da ferramenta: ")
                 ferr_service.remover(ferramenta)
-                print("Ferramenta removida.\n")
+
 
             elif sub == 3:
                 ferramenta = input("Digite o código da ferramenta: ")
@@ -119,7 +117,7 @@ if __name__ == "__main__":
             elif sub == 4:
                 ferramenta = input("Digite o código da ferramenta: ")
                 fer_repo.desativar(ferramenta)
-                print("Ferramenta desativada.\n")
+
 
 
         # ================= MOVIMENTAÇÃO =================
@@ -142,13 +140,13 @@ if __name__ == "__main__":
                 matricula = input("Matrícula: ")
                 ferramenta = input("Código da ferramenta: ")
                 mov_service.emprestar(matricula, ferramenta)
-                print("Empréstimo realizado.\n")
+
 
             elif sub == 2:
                 matricula = input("Matrícula: ")
                 ferramenta = input("Código da ferramenta: ")
                 mov_service.devolver(ferramenta)
-                print("Ferramenta devolvida.\n")
+
 
             elif sub == 3:
                 historico = "trabalhando nisso"

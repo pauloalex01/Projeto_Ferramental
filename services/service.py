@@ -11,14 +11,17 @@ class FerramentaService:
     def cadastrar(self, codigo, descricao):
 
         if self.repo.buscar_por_codigo_ativo(codigo):
-            return "Ferramenta já cadastrada e ativada"
+            print("Ferramenta já cadastrada e ativada")
+            return None
 
         elif self.repo.buscar_por_codigo(codigo):
-            return "Ferramenta já cadastrada, porém desativada"
+            print("Ferramenta já cadastrada, porém desativada")
+            return None
 
         else:
             self.repo.salvar(codigo, descricao)
-            return "Ferramenta cadastrada com sucesso."
+            print("Ferramenta cadastrada com sucesso.")
+            return None
 
     def remover(self, codigo):
 
@@ -44,27 +47,33 @@ class MatriculaService:
     def cadastrar(self, matricula_str, nome):
 
         if self.repo.buscar_por_matricula_ativo(matricula_str):
-            return "Matrícula está cadastrada e ativa"
+            print("Matrícula está cadastrada e ativa")
+            return None
 
         elif self.repo.buscar_por_matricula(matricula_str):
-            return "Matrícula já foi cadastrada."
+            print("Matrícula já foi cadastrada.")
+            return None
 
         else:
             nova_matricula = Matricula(matricula_str, nome)
             self.repo.salvar(nova_matricula)
-            return f"Matricula {nova_matricula} cadastrada com sucesso."
+            print(f"Matricula {nova_matricula} cadastrada com sucesso.")
+            return None
 
     def remover(self, matricula_str):
 
         if not self.repo.buscar_por_matricula(matricula_str):
-            return "Matricula não encontrada."
+            print("Matricula não encontrada.")
+            return None
 
         elif not self.repo.buscar_por_matricula_ativo(matricula_str):
-            return "Matrícula já está desativada."
+            print("Matrícula já está desativada.")
+            return None
 
         else:
             self.repo.desativar(matricula_str)
-            return "Matricula desativada com sucesso."
+            print("Matricula desativada com sucesso.")
+            return None
 
 
 class MovimentacaoService:
@@ -76,20 +85,23 @@ class MovimentacaoService:
 
     def emprestar(self, ferramenta_codigo, matricula_codigo):
 
-        f_reg = self.ferramenta_repo.buscar_por_codigo_ativo(ferramenta_codigo)
-        if not f_reg:
-            return "Ferramenta inexistente ou inativa"
-
         m_reg = self.matricula_repo.buscar_por_matricula_ativo(matricula_codigo)
         if not m_reg:
-            return "Matricula inexistente ou inativa"
+            print("Matricula inexistente ou inativa")
+            return None
+
+        f_reg = self.ferramenta_repo.buscar_por_codigo_ativo(ferramenta_codigo)
+        if not f_reg:
+            print("Ferramenta inexistente ou inativa")
+            return None
 
         ferramenta_id = f_reg[0]
         matricula_id = m_reg[0]
 
         # Verifica se já existe movimentação aberta
         if self.movimentacao_repo.buscar_movimentacao_aberta(ferramenta_id):
-            return "Ferramenta já está emprestada."
+            print("Ferramenta já está emprestada.")
+            return None
 
         data_retirada = datetime.now().strftime("%Y-%m-%d %H:%M:%S")
 
@@ -101,16 +113,18 @@ class MovimentacaoService:
 
         self.movimentacao_repo.salvar(movimentacao)
 
-        return "Empréstimo realizado com sucesso."
+        print("Empréstimo realizado com sucesso.")
+        return None
 
     def devolver(self, ferramenta_id):
 
         f_reg = self.movimentacao_repo.buscar_movimentacao_aberta(ferramenta_id)
         if not f_reg:
-            return "Ferramenta não está emprestada."
+            print("Ferramenta não está emprestada.")
+            return None
 
         data_devolucao = datetime.now().strftime("%Y-%m-%d %H:%M:%S")
 
         self.movimentacao_repo.registrar_devolucao(ferramenta_id, data_devolucao)
-
-        return "Devolução registrada com sucesso."
+        print("Devolução registrada com sucesso.")
+        return None
