@@ -1,12 +1,16 @@
 import sqlite3
+from pathlib import Path
+
+BASE_DIR = Path(__file__).resolve().parent.parent
+DB_PATH = BASE_DIR / 'data' / 'controle_ferramental.sqlite'
 
 class Database:
 
-    DB_PATH = 'controle_ferramental.sqlite'
 
     @staticmethod
     def conectar():
-        con = sqlite3.connect(Database.DB_PATH, timeout=5)
+        DB_PATH.parent.mkdir(exist_ok=True)
+        con = sqlite3.connect(DB_PATH, timeout=5)
         con.execute("PRAGMA foreign_keys = 1")
         return con
 
@@ -49,4 +53,4 @@ class Database:
             )
             """)
 
-        print("Banco criado com sucesso")
+

@@ -10,7 +10,8 @@ class FerramentaRepository:
                     VALUES (?, ?)
                 """, (codigo, descricao,))
 
-    def buscar_por_codigo(self, codigo):
+
+    def buscar_por_codigo_ativo(self, codigo):
 
             with Database.conectar() as con:
                 cursor = con.execute("""
@@ -22,6 +23,20 @@ class FerramentaRepository:
                 if res:
                     return res
 
+
+    def buscar_por_codigo(self, codigo):
+
+            with Database.conectar() as con:
+                cursor = con.execute("""
+                    SELECT id, codigo, descricao, status, ativo
+                    FROM ferramentas
+                    WHERE codigo = ?
+                """, (codigo,))
+                res = cursor.fetchone()
+                if res:
+                    return res
+
+
     def atualizar_descricao(self, codigo, nova_descricao):
 
         with Database.conectar() as con:
@@ -31,6 +46,7 @@ class FerramentaRepository:
                 WHERE codigo = ?
             """, (nova_descricao, codigo))
 
+
     def desativar(self, codigo):
 
         with Database.conectar() as con:
@@ -39,6 +55,11 @@ class FerramentaRepository:
                 SET ativo = 0
                 WHERE codigo = ?
             """, (codigo,))
+
+    def ativar (self, codigo):
+
+        with Database.conectar() as con:
+            con.execute("""UPDATE ferramentas SET ativo = 1 WHERE codigo = ?""", (codigo,))
 
 
 class MatriculaRepository:
@@ -57,18 +78,32 @@ class MatriculaRepository:
             cursor = con.execute("""
                 SELECT id, matricula, nome, ativo
                 FROM matriculas
-                WHERE matricula = ? AND ativo = 1
+                WHERE matricula = ?
             """, (matricula,))
-            return cursor.fetchone()
+            busca = cursor.fetchone()
+            return busca
+
+
+    def buscar_por_matricula_ativo(self, matricula):
+        with Database.conectar() as con:
+            cursor = con.execute("""
+                   SELECT id, matricula, nome, ativo
+                   FROM matriculas
+                   WHERE matricula = ? AND ativo = 1
+               """, (matricula,))
+            busca = cursor.fetchone()
+            return busca
+
 
     def desativar(self, matricula):
 
         with Database.conectar() as con:
-            con.execute("""
-                UPDATE matriculas
-                SET ativo = 0
-                WHERE matricula = ?
-            """, (matricula,))
+            con.execute("""UPDATE matriculas SET ativo = 0 WHERE matricula = ?""", (matricula,))
+
+    def ativar(self, matricula):
+
+        with Database.conectar() as con:
+            con.execute("""UPDATE matriculas SET ativo = 1 WHERE matricula = ?""", (matricula,))
 
 
 class MovimentacaoRepository:

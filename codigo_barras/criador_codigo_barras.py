@@ -26,7 +26,7 @@ def criar_codigo_barras(codigo):
     # Mover arquivo
     shutil.move(caminho_gerado, caminho_final)
 
-    return print(f'Código de barras salvo em: {caminho_final}')
+    return f'Código de barras salvo em: {caminho_final}'
 
 
 teste = [

@@ -97,14 +97,3 @@ class Leitor_codigo:
         #for instrumento in self.instrumentos_cadastrados:
            # print(instrumento)
 
-
-def main():
-    leitor = Leitor_codigo()
-    #leitor.iniciar_camera()
-    #leitor.ler_codigo()
-    #leitor.fechar_camera()
-    leitor.executar()
-
-if __name__ == "__main__":
-    main()
-
