@@ -1,0 +1,19 @@
+{
+  "CTk": {
+    "fg_color": ["#FFFFFF", "#F0F0F0"],
+    "_fg_color": ["#FFFFFF", "#F0F0F0"]
+  },
+  "CTkFrame": {
+    "fg_color": ["#F8F8F8", "#F8F8F8"],
+    "_fg_color": ["#F8F8F8", "#F8F8F8"]
+  },
+  "CTkButton": {
+    "fg_color": ["#4169E1", "#4169E1"], "hover_color": ["#365BC9", "#365BC9"], "text_color": ["#FFFFFF", "#FFFFFF"]
+  },
+  "CTkLabel": {
+    "text_color": ["#1A1A1A", "#1A1A1A"]
+  },
+  "CTkOptionMenu": {
+    "fg_color": ["#F8F8F8", "#F8F8F8"], "button_color": ["#4169E1", "#4169E1"], "button_hover_color": ["#365BC9", "#365BC9"], "text_color": ["#1A1A1A", "#1A1A1A"]
+  }
+}
