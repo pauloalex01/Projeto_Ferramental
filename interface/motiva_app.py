@@ -1,9 +1,17 @@
 import customtkinter
+from codigo_barras.decoder_cam import LeitorCodigo
+from services.service import MatriculaService, FerramentaService, MovimentacaoService
 
-class MotivaApp(customtkinter.CTk):
+
+class MotivaApp(customtkinter.CTk, LeitorCodigo, MovimentacaoService, MatriculaService, FerramentaService):
+
+    matricula = MatriculaService()
+    movimentacao = MovimentacaoService()
+    ferramenta = FerramentaService()
+    leitor = LeitorCodigo()
+
     def __init__(self):
         super().__init__()
-
         self.title("Motiva")
         self.geometry("1000x700")
 
@@ -20,49 +28,58 @@ class MotivaApp(customtkinter.CTk):
 
         # Frame de navegação (sidebar)
         self.navigation_frame = customtkinter.CTkFrame(self, corner_radius=0,
-                                                         fg_color=("#FFFFFF", "#1A1A1A")) # Branco para light, quase preto para dark
+                                                         fg_color=("#5e22f3", "#1A1A1A")) # Branco para light, quase preto para dark
         self.navigation_frame.grid(row=0, column=0, sticky="nsew")
         self.navigation_frame.grid_rowconfigure(5, weight=1)
 
-        self.navigation_frame_label = customtkinter.CTkLabel(self.navigation_frame, text="Motiva",
-                                                             compound="left", font=customtkinter.CTkFont(size=20, weight="bold"),
-                                                             text_color=("#1A1A1A", "#FFFFFF")) # Preto para light, branco para dark
+        self.navigation_frame_label = customtkinter.CTkLabel(self.navigation_frame, text="motiva",
+                                                             compound="left", font=customtkinter.CTkFont(size=45,family="Sora", weight="bold"),
+                                                             text_color=("#FFFFFF", "#FFFFFF")) # Preto para light, branco para dark
         self.navigation_frame_label.grid(row=0, column=0, padx=20, pady=20)
 
         # Botões de navegação
         self.home_button = customtkinter.CTkButton(self.navigation_frame, corner_radius=0, height=40, border_spacing=10,
                                                    text="Início",
-                                                   fg_color="transparent", text_color=("#1A1A1A", "#FFFFFF"),
-                                                   hover_color=("#E0E0E0", "#333333"), # Cinza claro para light, cinza escuro para dark
-                                                   anchor="w", command=self.home_button_event)
+                                                   fg_color="transparent", text_color=("#FFFFFF", "#FFFFFF"),
+                                                   hover_color=("#5e22f3", "#333333"), # Anil para light, cinza escuro para dark
+                                                   anchor="w", command=self.home_button_event,
+                                                   font=customtkinter.CTkFont(size=16,family="Sora", weight="bold"))
         self.home_button.grid(row=1, column=0, sticky="ew")
 
         self.matricula_button = customtkinter.CTkButton(self.navigation_frame, corner_radius=0, height=40, border_spacing=10,
                                                         text="Matrícula",
-                                                        fg_color="transparent", text_color=("#1A1A1A", "#FFFFFF"),
-                                                        hover_color=("#E0E0E0", "#333333"),
-                                                        anchor="w", command=self.matricula_button_event)
+                                                        fg_color="transparent", text_color=("#FFFFFF", "#FFFFFF"),
+                                                        hover_color=("#5e22f3", "#333333"),
+                                                        # Anil para light, cinza escuro para dark
+                                                        anchor="w", command=self.matricula_button_event,
+                                                        font=customtkinter.CTkFont(size=16, family="Sora", weight="bold"))
         self.matricula_button.grid(row=2, column=0, sticky="ew")
 
         self.ferramenta_button = customtkinter.CTkButton(self.navigation_frame, corner_radius=0, height=40, border_spacing=10,
                                                          text="Ferramenta",
-                                                         fg_color="transparent", text_color=("#1A1A1A", "#FFFFFF"),
-                                                         hover_color=("#E0E0E0", "#333333"),
-                                                         anchor="w", command=self.ferramenta_button_event)
+                                                         fg_color="transparent", text_color=("#FFFFFF", "#FFFFFF"),
+                                                         hover_color=("#5e22f3", "#333333"),
+                                                         # Anil para light, cinza escuro para dark
+                                                         anchor="w", command=self.ferramenta_button_event,
+                                                         font=customtkinter.CTkFont(size=16, family="Sora",weight="bold"))
         self.ferramenta_button.grid(row=3, column=0, sticky="ew")
 
         self.movimentacao_button = customtkinter.CTkButton(self.navigation_frame, corner_radius=0, height=40, border_spacing=10,
                                                            text="Movimentação",
-                                                           fg_color="transparent", text_color=("#1A1A1A", "#FFFFFF"),
-                                                           hover_color=("#E0E0E0", "#333333"),
-                                                           anchor="w", command=self.movimentacao_button_event)
+                                                           fg_color="transparent", text_color=("#FFFFFF", "#FFFFFF"),
+                                                           hover_color=("#5e22f3", "#333333"),
+                                                           # Anil para light, cinza escuro para dark
+                                                           anchor="w", command=self.movimentacao_button_event,
+                                                           font=customtkinter.CTkFont(size=16, family="Sora",weight="bold"))
         self.movimentacao_button.grid(row=4, column=0, sticky="ew")
 
         self.leitor_codigo_button = customtkinter.CTkButton(self.navigation_frame, corner_radius=0, height=40, border_spacing=10,
                                                             text="Leitor de Código",
-                                                            fg_color="transparent", text_color=("#1A1A1A", "#FFFFFF"),
-                                                            hover_color=("#E0E0E0", "#333333"),
-                                                            anchor="w", command=self.leitor_codigo_button_event)
+                                                            fg_color="transparent", text_color=("#FFFFFF", "#FFFFFF"),
+                                                            hover_color=("#5e22f3", "#333333"),
+                                                            # Anil para light, cinza escuro para dark
+                                                            anchor="w", command=self.leitor_codigo_button_event,
+                                                            font=customtkinter.CTkFont(size=16, family="Sora",weight="bold"))
         self.leitor_codigo_button.grid(row=5, column=0, sticky="ew")
 
         self.appearance_mode_label = customtkinter.CTkLabel(self.navigation_frame, text="Modo de Aparência:", anchor="w",
@@ -71,15 +88,15 @@ class MotivaApp(customtkinter.CTk):
         self.appearance_mode_optionemenu = customtkinter.CTkOptionMenu(self.navigation_frame, values=["Light", "Dark", "System"],
                                                                        command=self.change_appearance_mode_event,
                                                                        fg_color=("#F8F8F8", "#1A1A1A"), # Fundo do menu
-                                                                       button_color=("#4169E1", "#FFFFFF"), # Anil para light, branco para dark
-                                                                       button_hover_color=("#365BC9", "#CCCCCC"), # Anil escuro para light, cinza claro para dark
+                                                                       button_color=("#5e22f3", "#FFFFFF"), # Anil para light, branco para dark
+                                                                       button_hover_color=("#3c12a8", "#CCCCCC"), # Anil escuro para light, cinza claro para dark
                                                                        text_color=("#1A1A1A", "#FFFFFF"))
         self.appearance_mode_optionemenu.grid(row=7, column=0, padx=20, pady=(10, 20), sticky="ew")
 
         # Frames de conteúdo
         self.home_frame = customtkinter.CTkFrame(self, corner_radius=0, fg_color="transparent")
         self.home_frame.grid_columnconfigure(0, weight=1)
-        self.home_frame_label = customtkinter.CTkLabel(self.home_frame, text="Bem-vindo ao Motiva!", font=customtkinter.CTkFont(size=24, weight="bold"),
+        self.home_frame_label = customtkinter.CTkLabel(self.home_frame, text="Ferramental Automático", font=customtkinter.CTkFont(size=24, family="Sora" ,weight="bold"),
                                                        text_color=("#1A1A1A", "#FFFFFF"))
         self.home_frame_label.grid(row=0, column=0, padx=20, pady=20)
 
@@ -146,11 +163,13 @@ class MotivaApp(customtkinter.CTk):
     def select_frame_by_name(self, name):
         # Definir cor de fundo do botão para o frame selecionado
         # Usando fg_color com tupla para suportar modos claro/escuro
-        self.home_button.configure(fg_color=("#E0E0E0", "#333333") if name == "home" else "transparent")
-        self.matricula_button.configure(fg_color=("#E0E0E0", "#333333") if name == "matricula" else "transparent")
-        self.ferramenta_button.configure(fg_color=("#E0E0E0", "#333333") if name == "ferramenta" else "transparent")
-        self.movimentacao_button.configure(fg_color=("#E0E0E0", "#333333") if name == "movimentacao" else "transparent")
-        self.leitor_codigo_button.configure(fg_color=("#E0E0E0", "#333333") if name == "leitor_codigo" else "transparent")
+
+
+        self.home_button.configure(fg_color=("#000000", "#333333") if name == "home" else "transparent")
+        self.matricula_button.configure(fg_color=("#000000", "#333333") if name == "matricula" else "transparent")
+        self.ferramenta_button.configure(fg_color=("#000000", "#333333") if name == "ferramenta" else "transparent")
+        self.movimentacao_button.configure(fg_color=("#000000", "#333333") if name == "movimentacao" else "transparent")
+        self.leitor_codigo_button.configure(fg_color=("#000000", "#333333") if name == "leitor_codigo" else "transparent")
 
         # Mostrar o frame selecionado e esconder os outros
         if name == "home":
@@ -194,6 +213,12 @@ class MotivaApp(customtkinter.CTk):
 
     # Métodos placeholder para as funcionalidades
     def cadastrar_matricula(self):
+        matricula_input = customtkinter.CTkInputDialog(text="Digite sua matrícula:", title="Cadastro de Matrícula")
+        matricula_cadastro = matricula_input.get_input()
+
+        nome_input = customtkinter.CTkInputDialog(text="Digite seu nome:", title="Cadastro de Matrícula")
+        nome_cadastro = nome_input.get_input()
+        self.matricula.cadastrar(matricula_cadastro, nome_cadastro)
         print("Cadastrar Matrícula clicado")
         # Anexar método da classe Matrícula aqui
 
@@ -234,7 +259,10 @@ class MotivaApp(customtkinter.CTk):
         # Anexar método da classe Movimentação aqui
 
     def iniciar_leitor_codigo(self):
-        print("Iniciar Leitor de Código clicado")
+        print("Iniciando Leitor de Código...")
+        self.leitor.executar()
+        self.messagebox = customtkinter.CTk()
+
         # Anexar método da classe Leitor_codigo aqui
 
 
