@@ -47,33 +47,36 @@ class MatriculaService:
     def cadastrar(self, matricula_str, nome):
 
         if self.repo.buscar_por_matricula_ativo(matricula_str):
-            print("Matrícula está cadastrada e ativa")
-            return None
+            return 1
 
         elif self.repo.buscar_por_matricula(matricula_str):
-            print("Matrícula já foi cadastrada.")
-            return None
+            return 2
 
         else:
-            nova_matricula = Matricula(matricula_str, nome)
-            self.repo.salvar(nova_matricula)
-            print(f"Matricula {nova_matricula} cadastrada com sucesso.")
-            return None
+            Matricula(matricula_str, nome)
+            return 3
+
+    def atualizar(self, matricula_str, nome):
+
+        if self.repo.buscar_por_matricula_ativo(matricula_str):
+            self.repo.atualizar_nome(matricula_str, nome)
+            return 1
+
+        elif self.repo.buscar_por_matricula(matricula_str):
+            return 2
+
 
     def remover(self, matricula_str):
 
         if not self.repo.buscar_por_matricula(matricula_str):
-            print("Matricula não encontrada.")
-            return None
+            return 1
 
         elif not self.repo.buscar_por_matricula_ativo(matricula_str):
-            print("Matrícula já está desativada.")
-            return None
+            return 2
 
         else:
             self.repo.desativar(matricula_str)
-            print("Matricula desativada com sucesso.")
-            return None
+            return 3
 
 
 class MovimentacaoService:

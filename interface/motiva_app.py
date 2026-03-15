@@ -1,10 +1,12 @@
 import customtkinter
 from codigo_barras.decoder_cam import LeitorCodigo
+from repositories.repositories import MatriculaRepository
 from services.service import MatriculaService, FerramentaService, MovimentacaoService
-
+from CTkMessagebox import CTkMessagebox
 
 class MotivaApp(customtkinter.CTk, LeitorCodigo, MovimentacaoService, MatriculaService, FerramentaService):
 
+    matricula_repo = MatriculaRepository()
     matricula = MatriculaService()
     movimentacao = MovimentacaoService()
     ferramenta = FerramentaService()
@@ -218,17 +220,94 @@ class MotivaApp(customtkinter.CTk, LeitorCodigo, MovimentacaoService, MatriculaS
 
         nome_input = customtkinter.CTkInputDialog(text="Digite seu nome:", title="Cadastro de Matrícula")
         nome_cadastro = nome_input.get_input()
-        self.matricula.cadastrar(matricula_cadastro, nome_cadastro)
-        print("Cadastrar Matrícula clicado")
-        # Anexar método da classe Matrícula aqui
+
+        mensagem = CTkMessagebox(title="Confirmação",
+                                 message=f"Matricula: {matricula_cadastro}, Nome: {nome_cadastro}",
+                                 icon="question",
+                                 option_1="Sim",
+                                 option_2="Não")
+
+        resposta = mensagem.get()
+
+        if resposta == "Sim":
+            busca = self.matricula.cadastrar(matricula_cadastro, nome_cadastro)
+
+            if busca == 1:
+                CTkMessagebox(title="Cancelado",message=f"Matricula: {matricula_cadastro} já existente e ativa no sistema")
+            elif busca == 2:
+                CTkMessagebox(title="Cancelado",
+                              message=f"Matricula: {matricula_cadastro} já existente, porém desativada")
+            else:
+                CTkMessagebox(title="Sucesso",
+                              message=f"Matricula: {matricula_cadastro} cadastrada com sucesso")
+        else:
+            CTkMessagebox(title="Cancelado", message="Cadastro Cancelado")
+
 
     def atualizar_matricula(self):
-        print("Atualizar Matrícula clicado")
-        # Anexar método da classe Matrícula aqui
+        matricula_input = customtkinter.CTkInputDialog(text="Digite a matrícula cujo nome será atualizado:",
+                                                       title="Mudança de nome")
+        matricula = matricula_input.get_input()
+
+        nome = self.matricula_repo.buscar_por_matricula(matricula)
+
+        if nome is not None:
+            nome = nome[2]
+        else:
+            nome = ""
+
+        mensagem = CTkMessagebox(title="Confirmação",
+                                 message=f"Deseja substituir o nome {nome} ?",
+                                 icon="question",
+                                 option_1="Sim",
+                                 option_2="Não")
+
+        resposta = mensagem.get()
+
+        if resposta == "Sim":
+
+            nome = customtkinter.CTkInputDialog(text="Digite o novo nome:",
+                                                   title="Mudança de nome")
+            nome_novo = nome.get_input()
+
+            atualizacao = self.matricula.atualizar(matricula, nome_novo)
+
+            if atualizacao == 1:
+                CTkMessagebox(title="Sucesso!",
+                              message=f"Atualização realizada com sucesso")
+            else:
+                CTkMessagebox(title="Erro",
+                              message=f"Matricula está desativada")
+        else:
+
+            CTkMessagebox(title="Cancelado", message="Desativação foi cancelada")
 
     def remover_matricula(self):
-        print("Remover Matrícula clicado")
-        # Anexar método da classe Matrícula aqui
+
+        matricula_input = customtkinter.CTkInputDialog(text="Digite a matrícula a ser desativada:", title="Cadastro de Matrícula")
+        matricula_remocao = matricula_input.get_input()
+
+        mensagem = CTkMessagebox(title="Confirmação",
+                                 message=f"Deseja desativar a Matricula: {matricula_remocao}?",
+                                 icon="question",
+                                 option_1="Sim",
+                                 option_2="Não")
+
+        resposta = mensagem.get()
+        if resposta == "Sim":
+            remocao = self.matricula.remover(matricula_remocao)
+
+            if remocao == 1:
+                CTkMessagebox(title="Erro",
+                              message=f"Matricula não encontrada")
+            elif remocao == 2:
+                CTkMessagebox(title="Erro",
+                              message=f"Matricula já está desativada")
+            else:
+                CTkMessagebox(title="Sucesso",
+                              message=f"Matricula: {matricula_remocao} removida com sucesso")
+        else:
+            CTkMessagebox(title="Cancelado", message="Desativação foi cancelada")
 
     def ler_matricula(self):
         print("Ler Matrícula clicado")
@@ -261,7 +340,7 @@ class MotivaApp(customtkinter.CTk, LeitorCodigo, MovimentacaoService, MatriculaS
     def iniciar_leitor_codigo(self):
         print("Iniciando Leitor de Código...")
         self.leitor.executar()
-        self.messagebox = customtkinter.CTk()
+
 
         # Anexar método da classe Leitor_codigo aqui
 

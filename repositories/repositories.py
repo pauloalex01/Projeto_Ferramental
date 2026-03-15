@@ -106,6 +106,15 @@ class MatriculaRepository:
             con.execute("""UPDATE matriculas SET ativo = 1 WHERE matricula = ?""", (matricula,))
 
 
+    def atualizar_nome(self, matricula, nome):
+
+        with Database.conectar() as con:
+            con.execute("""
+                UPDATE matriculas
+                SET nome = ?
+                WHERE matricula = ?
+            """, (matricula, nome))
+
 class MovimentacaoRepository:
 
     def salvar(self, movimentacao):
