@@ -71,10 +71,6 @@ class LeitorCodigo:
         cv2.destroyAllWindows()
         return self.instrumentos_cadastrados
 
-    def get_codigos_cadastrados(self) -> List[str]:
-        """Retorna a lista de códigos de barras cadastrados."""
-        return self.instrumentos_cadastrados
-
     def executar(self) -> List[str]:
         """Executa o processo completo de leitura de código de barras."""
         try:
@@ -85,7 +81,6 @@ class LeitorCodigo:
             print(e)
             return []
 
-# Exemplo de uso:
 if __name__ == '__main__':
     leitor = LeitorCodigo()
     codigos_lidos = leitor.executar()

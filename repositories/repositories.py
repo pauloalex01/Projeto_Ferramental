@@ -64,13 +64,13 @@ class FerramentaRepository:
 
 class MatriculaRepository:
 
-    def salvar(self, matricula):
+    def salvar(self, matricula, nome):
 
         with Database.conectar() as con:
             con.execute("""
-                INSERT INTO matriculas (matricula, nome, ativo)
-                VALUES (?, ?, ?)
-            """, (matricula.matricula, matricula.nome, matricula.ativo))
+                INSERT INTO matriculas (matricula, nome)
+                VALUES (?, ?)
+            """, (matricula, nome,))
 
     def buscar_por_matricula(self, matricula):
 
