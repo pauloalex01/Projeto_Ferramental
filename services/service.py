@@ -1,5 +1,5 @@
 from repositories.repositories import  FerramentaRepository, MatriculaRepository, MovimentacaoRepository
-from models.models import Matricula, Movimentacao
+from models.models import Movimentacao
 from datetime import datetime
 
 
@@ -17,7 +17,7 @@ class FerramentaService:
             return 2
 
         else:
-            self.repo.salvar(codigo, descricao)
+            self.repo.salvar(codigo=codigo, descricao=descricao)
             return 3
 
     def remover(self, codigo):
@@ -37,19 +37,43 @@ class FerramentaService:
         if not self.repo.buscar_por_codigo(ferramenta):
             return 1
 
-        elif not self.repo.buscar_por_codigo_ativo(ferramenta):
+        elif self.repo.buscar_por_codigo_ativo(ferramenta):
             return 2
 
         else:
             self.repo.ativar(ferramenta)
             return 3
 
+    def buscar(self, ferramenta):
+
+        if not self.repo.buscar_por_codigo(ferramenta):
+            return 1
+
+        else:
+            busca = self.repo.buscar_por_codigo(ferramenta)
+            return busca
+
+    def atualizar(self, ferramenta_codigo, descricao):
+
+        if self.repo.buscar_por_codigo_ativo(ferramenta_codigo):
+            self.repo.atualizar_descricao(codigo=ferramenta_codigo, nova_descricao=descricao)
+            return 0
+
+        elif self.repo.buscar_por_codigo(codigo=ferramenta_codigo):
+            return 1
+
+        elif not self.repo.buscar_por_codigo(codigo=ferramenta_codigo):
+            return 2
+
+        return None
+
+
 class MatriculaService:
 
     def __init__(self):
         self.repo = MatriculaRepository()
 
-    def cadastrar(self, matricula_str, nome):
+    def cadastrar(self, matricula_str, nome, setor):
 
         if self.repo.buscar_por_matricula_ativo(matricula_str):
             return 1
@@ -58,7 +82,7 @@ class MatriculaService:
             return 2
 
         else:
-            self.repo.salvar(matricula=matricula_str, nome=nome)
+            self.repo.salvar(matricula=matricula_str, nome=nome, setor=setor)
             return 3
 
     def atualizar(self, matricula_str, nome):
@@ -102,8 +126,8 @@ class MatriculaService:
             return 1
 
         else:
-            id,matricula,nome,status = self.buscar(matricula_str)
-            return id,matricula,nome,status
+            busca = self.repo.buscar_por_matricula(matricula_str)
+            return busca
 
 
 class MovimentacaoService:
@@ -113,25 +137,42 @@ class MovimentacaoService:
         self.ferramenta_repo = FerramentaRepository()
         self.matricula_repo = MatriculaRepository()
 
+
+    def buscar_matricula_id(self, matricula):
+
+        m_reg = self.matricula_repo.buscar_por_matricula_ativo(matricula)
+        if not m_reg:
+            return False
+        m_reg = m_reg[0]
+        return m_reg
+
+    def buscar_ferramenta_id(self, ferramenta):
+
+        f_reg = self.ferramenta_repo.buscar_por_codigo_ativo(ferramenta)
+        if not f_reg:
+            return False
+        f_reg = f_reg[0]
+        return f_reg
+
     def emprestar(self, ferramenta_codigo, matricula_codigo):
 
-        m_reg = self.matricula_repo.buscar_por_matricula_ativo(matricula_codigo)
-        if not m_reg:
-            print("Matricula inexistente ou inativa")
-            return None
+        matricula_id = self.buscar_matricula_id(matricula_codigo)
 
-        f_reg = self.ferramenta_repo.buscar_por_codigo_ativo(ferramenta_codigo)
-        if not f_reg:
-            print("Ferramenta inexistente ou inativa")
-            return None
+        if not matricula_id:
+            return 1
 
-        ferramenta_id = f_reg[0]
-        matricula_id = m_reg[0]
+        ferramenta_id = self.buscar_ferramenta_id(ferramenta_codigo)
 
-        # Verifica se já existe movimentação aberta
-        if self.movimentacao_repo.buscar_movimentacao_aberta(ferramenta_id):
-            print("Ferramenta já está emprestada.")
-            return None
+        if not ferramenta_id:
+            return 2
+
+        quantidade = self.ferramenta_repo.buscar_quantidade(ferramenta_id)
+
+        if quantidade <= 0:
+            return 5  # sem ferramenta disponível
+
+        if self.movimentacao_repo.buscar_movimentacao_aberta_ferramenta(ferramenta_id):
+            return 3
 
         data_retirada = datetime.now().strftime("%Y-%m-%d %H:%M:%S")
 
@@ -143,29 +184,54 @@ class MovimentacaoService:
 
         self.movimentacao_repo.salvar(movimentacao)
 
-        print("Empréstimo realizado com sucesso.")
-        return None
 
-    def devolver(self, matricula, ferramenta):
+        self.ferramenta_repo.diminuir_quantidade(ferramenta_id)
 
-        m_reg = self.matricula_repo.buscar_por_matricula_ativo(matricula)
-        if not m_reg:
-            print("Matricula inexistente ou inativa")
-            return None
+        return 4
 
-        f_reg = self.ferramenta_repo.buscar_por_codigo_ativo(ferramenta)
+    def devolver(self, ferramenta, matricula):
+
+        matricula_id = self.buscar_matricula_id(matricula)
+
+        if not matricula_id:
+            return 1
+
+        ferramenta_id = self.buscar_ferramenta_id(ferramenta)
+
+        if not ferramenta_id:
+            return 2
+
+        f_reg = self.movimentacao_repo.buscar_movimentacao_aberta_ferramenta(ferramenta_id)
+
         if not f_reg:
-            print("Ferramenta inexistente ou inativa")
-            return None
-
-        ferramenta_id = f_reg[0]
-
-        f_reg = self.movimentacao_repo.buscar_movimentacao_aberta(ferramenta_id)
-        if not f_reg:
-            print("Ferramenta não está emprestada.")
-            return None
+            return 3
 
         data_devolucao = datetime.now().strftime("%Y-%m-%d %H:%M:%S")
 
         self.movimentacao_repo.registrar_devolucao(ferramenta_id, data_devolucao)
-        return None
+
+        self.ferramenta_repo.aumentar_quantidade(ferramenta_id)
+
+        return 4
+
+    def buscar_movimentacoes_abertas_matricula(self, matricula_codigo):
+
+        matricula_id = self.buscar_matricula_id(matricula_codigo)
+
+        if not matricula_id:
+            return 1
+
+        busca = self.movimentacao_repo.buscar_movimentacao_aberta_matricula(matricula_id)
+
+        return busca
+
+    def buscar_movimentacoes_abertas_ferramenta(self, ferramenta_codigo):
+
+        ferramenta_id = self.buscar_ferramenta_id(ferramenta_codigo)
+
+        if not ferramenta_id:
+            return 1
+
+        busca = self.movimentacao_repo.buscar_movimentacao_aberta_ferramenta(ferramenta_id)
+
+        return busca

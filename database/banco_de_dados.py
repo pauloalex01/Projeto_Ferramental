@@ -26,6 +26,7 @@ class Database:
             codigo TEXT NOT NULL UNIQUE,
             descricao TEXT NOT NULL,
             status TEXT NOT NULL DEFAULT 'Disponivel',
+            quantidade INTEGER NOT NULL DEFAULT 1,
             ativo INTEGER DEFAULT 1
             )
             """)
@@ -36,6 +37,7 @@ class Database:
             id INTEGER NOT NULL PRIMARY KEY AUTOINCREMENT,
             matricula TEXT NOT NULL UNIQUE,
             nome TEXT NOT NULL,
+            setor TEXT NOT NULL,
             ativo INTEGER DEFAULT 1
             )
             """)
