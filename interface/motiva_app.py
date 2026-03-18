@@ -4,6 +4,7 @@ from repositories.repositories import MatriculaRepository, FerramentaRepository
 from services.service import MatriculaService, FerramentaService, MovimentacaoService
 from CTkMessagebox import CTkMessagebox
 from database.banco_de_dados import Database
+from tkinter import ttk
 
 
 class MotivaApp(customtkinter.CTk, LeitorCodigo, MovimentacaoService, MatriculaService, FerramentaService):
@@ -94,7 +95,7 @@ class MotivaApp(customtkinter.CTk, LeitorCodigo, MovimentacaoService, MatriculaS
 
         self.movimentacao_button = customtkinter.CTkButton(text="Movimentação", command=self.movimentacao_button_event,
                                                            **common_args)
-        self.movimentacao_button.grid(row=5, column=0, sticky="ew")
+        self.movimentacao_button.grid(row=3, column=0, sticky="ew")
 
         self.leitor_codigo_button = customtkinter.CTkButton(text="Leitor de Código",
                                                             command=self.leitor_codigo_button_event, **common_args)
@@ -108,6 +109,7 @@ class MotivaApp(customtkinter.CTk, LeitorCodigo, MovimentacaoService, MatriculaS
         self.setup_leitor_codigo_frame()
 
     def setup_home_frame(self):
+
         self.home_frame = customtkinter.CTkFrame(self, corner_radius=0, fg_color="transparent")
         self.home_frame.grid_columnconfigure(0, weight=1)
         self.home_frame_label = customtkinter.CTkLabel(
@@ -116,6 +118,49 @@ class MotivaApp(customtkinter.CTk, LeitorCodigo, MovimentacaoService, MatriculaS
             text_color=("#1A1A1A", "#FFFFFF")
         )
         self.home_frame_label.grid(row=0, column=0, padx=20, pady=20)
+        # Frame do histórico
+        self.historico_frame = customtkinter.CTkFrame(self.home_frame)
+        self.historico_frame.grid(row=1, column=0, padx=20, pady=20, sticky="nsew")
+
+        self.home_frame.grid_rowconfigure(1, weight=1)
+
+        historico_label = customtkinter.CTkLabel(
+            self.home_frame,
+            text="Últimas Movimentações",
+            font=customtkinter.CTkFont(size=18, weight="bold")
+        )
+
+        historico_label.grid(row=1, column=0, pady=(10, 0))
+
+        self.criar_tabela_historico()
+
+
+
+    def criar_tabela_historico(self):
+
+        colunas = ("Ferramenta", "Matrícula", "Quantidade", "Retirada", "Devolução")
+
+        self.historico_tabela = ttk.Treeview(
+            self.historico_frame,
+            columns=colunas,
+            show="headings",
+            height=10
+        )
+
+        for col in colunas:
+            self.historico_tabela.heading(col, text=col)
+            self.historico_tabela.column(col, anchor="center")
+
+        self.historico_tabela.grid(row=0, column=0, sticky="nsew")
+
+        scrollbar = ttk.Scrollbar(self.historico_frame, orient="vertical", command=self.historico_tabela.yview)
+        self.historico_tabela.configure(yscrollcommand=scrollbar.set)
+        scrollbar.grid(row=0, column=1, sticky="ns")
+
+        dados = self.movimentacao.carregar_historico()
+
+        for row in dados:
+            self.historico_tabela.insert("", "end", values=row)
 
     def setup_cadastro_frame(self):
         self.cadastro_frame = customtkinter.CTkFrame(self, corner_radius=0, fg_color="transparent")
@@ -506,14 +551,22 @@ class MotivaApp(customtkinter.CTk, LeitorCodigo, MovimentacaoService, MatriculaS
 
         if not descricao_cadastro: return None
 
+        quantidade_input = customtkinter.CTkInputDialog(text="Digite a quantidade da ferramenta:",
+                                                       title="Cadastro de Ferramenta")
+        quantidade_cadastro = quantidade_input.get_input()
+
+        if not quantidade_cadastro: return None
+
         mensagem = CTkMessagebox(title="Confirmação",
-                                 message=f"Ferramenta: {ferramenta_cadastro}, Descrição: {descricao_cadastro}",
+                                 message=f"Ferramenta: {ferramenta_cadastro},\nDescrição: {descricao_cadastro}, \nQuantidade: {quantidade_cadastro}",
                                  icon="question",
                                  option_1="Sim",
                                  option_2="Não")
 
         if mensagem.get() == "Sim":
-            busca = self.ferramenta.cadastrar(ferramenta_cadastro, descricao_cadastro)
+            busca = self.ferramenta.cadastrar(codigo=ferramenta_cadastro,
+                                              descricao=descricao_cadastro,
+                                              quantidade=quantidade_cadastro)
             if busca == 1:
                 CTkMessagebox(title="Cancelado",
                               message=f"{descricao_cadastro} já existente e ativa no sistema")
@@ -537,8 +590,6 @@ class MotivaApp(customtkinter.CTk, LeitorCodigo, MovimentacaoService, MatriculaS
         ferramenta_input = customtkinter.CTkInputDialog(text="Digite o código da ferramenta a ser atualizada:",
                                                         title="Mudança de Descrição")
         ferramenta_atualizacao = ferramenta_input.get_input()
-
-
 
         if not ferramenta_atualizacao: return None
 
@@ -629,13 +680,13 @@ class MotivaApp(customtkinter.CTk, LeitorCodigo, MovimentacaoService, MatriculaS
                 CTkMessagebox(title="Erro", message="Ferramenta não encontrada")
                 return None
             else:
-                identificacao, codigo, descricao, status, ativo = busca
+                identificacao, codigo, descricao, status, quantidade, ativo = busca
 
                 if ativo == 1:
-                    CTkMessagebox(title="Sucesso", message=f"Código: {codigo}\nDescrição: {descricao}\nStatus: Ativo")
+                    CTkMessagebox(title="Sucesso", message=f"Código: {codigo}\nDescrição: {descricao}\nQuantidade: {quantidade}\nStatus: Ativo")
                     return busca
                 elif ativo == 0:
-                    CTkMessagebox(title="Sucesso", message=f"Código: {codigo}\nDescrição: {descricao}\nStatus: Desativo")
+                    CTkMessagebox(title="Sucesso", message=f"Código: {codigo}\nDescrição: {descricao}\nQuantidade: {quantidade}\nStatus: Desativo")
                     return busca
                 return None
         else:
@@ -683,7 +734,13 @@ class MotivaApp(customtkinter.CTk, LeitorCodigo, MovimentacaoService, MatriculaS
                                                        title="Empréstimo")
         matricula_emprestimo = matricula_input.get_input()
 
-        emprestimo = self.movimentacao.emprestar(ferramenta_codigo=ferramenta_emprestada, matricula_codigo=matricula_emprestimo)
+        quantidade_input = customtkinter.CTkInputDialog(text="Digite a quantidade da ferramenta a ser emprestada:",
+                                                       title="Empréstimo")
+        quantidade_emprestimo = quantidade_input.get_input()
+
+        emprestimo = self.movimentacao.emprestar(ferramenta_codigo=ferramenta_emprestada,
+                                                 matricula_codigo=matricula_emprestimo,
+                                                 quantidade=quantidade_emprestimo)
 
         if emprestimo:
 
@@ -703,25 +760,30 @@ class MotivaApp(customtkinter.CTk, LeitorCodigo, MovimentacaoService, MatriculaS
 
     def devolver_ferramenta(self):
         ferramenta_input = customtkinter.CTkInputDialog(text="Digite o código da ferramenta a ser devolvida:",
-                                                        title="Empréstimo")
-        ferramenta_emprestada = ferramenta_input.get_input()
+                                                        title="Devolução")
+        ferramenta_devolucao = ferramenta_input.get_input()
 
-        matricula_input = customtkinter.CTkInputDialog(text="Digite a matrícula a ser atribuido o empréstimo:",
-                                                       title="Empréstimo")
-        matricula_emprestimo = matricula_input.get_input()
+        matricula_input = customtkinter.CTkInputDialog(text="Digite a matrícula a qual foi atribuída o empréstimo:",
+                                                       title="Devolução")
+        matricula_devolucao = matricula_input.get_input()
 
-        emprestimo = self.movimentacao.emprestar(ferramenta_codigo=ferramenta_emprestada,
-                                                 matricula_codigo=matricula_emprestimo)
+        quantidade_input = customtkinter.CTkInputDialog(text="Digite a quantidade a ser devolvida:",
+                                                       title="Devolução")
+        quantidade_devolucao = quantidade_input.get_input()
 
-        if emprestimo == 1:
+        devolucao = self.movimentacao.emprestar(ferramenta_codigo=ferramenta_devolucao,
+                                                 matricula_codigo=matricula_devolucao,
+                                                 quantidade=quantidade_devolucao)
 
-            if emprestimo == 1:
+        if devolucao == 1:
+
+            if devolucao == 1:
                 CTkMessagebox(title="Erro", message="Matrícula não encontrada")
                 return None
-            elif emprestimo == 2:
+            elif devolucao == 2:
                 CTkMessagebox(title="Erro", message=f"Ferramenta não encontrada")
                 return None
-            elif emprestimo == 3:
+            elif devolucao == 3:
                 CTkMessagebox(title="Erro", message=f"Ferramenta já foi emprestada")
                 return None
             else:

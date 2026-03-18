@@ -8,7 +8,7 @@ class FerramentaService:
     def __init__(self):
         self.repo = FerramentaRepository()
 
-    def cadastrar(self, codigo, descricao):
+    def cadastrar(self, codigo, descricao, quantidade):
 
         if self.repo.buscar_por_codigo_ativo(codigo):
             return 1
@@ -17,7 +17,7 @@ class FerramentaService:
             return 2
 
         else:
-            self.repo.salvar(codigo=codigo, descricao=descricao)
+            self.repo.salvar(codigo=codigo, descricao=descricao, quantidade=quantidade)
             return 3
 
     def remover(self, codigo):
@@ -52,6 +52,15 @@ class FerramentaService:
         else:
             busca = self.repo.buscar_por_codigo(ferramenta)
             return busca
+
+    def buscar_quantidade(self, ferramenta):
+
+        if not self.repo.buscar_por_codigo(ferramenta):
+            return 1
+
+        else:
+            identificao, codigo, descricao, status, quantidade, ativo,  = self.repo.buscar_por_codigo(ferramenta)
+            return quantidade
 
     def atualizar(self, ferramenta_codigo, descricao):
 
@@ -154,7 +163,7 @@ class MovimentacaoService:
         f_reg = f_reg[0]
         return f_reg
 
-    def emprestar(self, ferramenta_codigo, matricula_codigo):
+    def emprestar(self, ferramenta_codigo, matricula_codigo, quantidade):
 
         matricula_id = self.buscar_matricula_id(matricula_codigo)
 
@@ -166,7 +175,7 @@ class MovimentacaoService:
         if not ferramenta_id:
             return 2
 
-        quantidade = self.ferramenta_repo.buscar_quantidade(ferramenta_id)
+        quantidade = self.ferramenta_repo.buscar_por_quantidade(ferramenta_id)
 
         if quantidade <= 0:
             return 5  # sem ferramenta disponível
@@ -235,3 +244,12 @@ class MovimentacaoService:
         busca = self.movimentacao_repo.buscar_movimentacao_aberta_ferramenta(ferramenta_id)
 
         return busca
+
+    def carregar_historico(self):
+
+        historico = self.movimentacao_repo.carregar_historico()
+
+        if not historico:
+            return []
+
+        return historico

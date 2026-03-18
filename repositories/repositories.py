@@ -1,3 +1,5 @@
+from sklearn.decomposition import non_negative_factorization
+
 from database.banco_de_dados import Database
 
 class FerramentaRepository:
@@ -7,7 +9,7 @@ class FerramentaRepository:
             with Database.conectar() as con:
                 con.execute("""
                     INSERT INTO ferramentas (codigo, descricao, quantidade)
-                    VALUES (?, ?)
+                    VALUES (?, ?, ?)
                 """, (codigo, descricao,quantidade,))
 
 
@@ -35,7 +37,20 @@ class FerramentaRepository:
                 res = cursor.fetchone()
                 if res:
                     return res
+            return None
 
+    def buscar_por_quantidade(self, codigo):
+
+            with Database.conectar() as con:
+                cursor = con.execute("""
+                    SELECT quantidade
+                    FROM ferramentas
+                    WHERE codigo = ?
+                """, (codigo,))
+                qtd = cursor.fetchone()
+                if qtd:
+                    return qtd
+            return None
 
     def atualizar_descricao(self, codigo, nova_descricao):
 
@@ -159,11 +174,12 @@ class MovimentacaoRepository:
         with Database.conectar() as con:
             con.execute("""
                 INSERT INTO movimentacoes 
-                (ferramenta_id, matricula_id, data_retirada, data_devolucao)
-                VALUES (?, ?, ?, ?)
+                (ferramenta_id, matricula_id, quantidade, data_retirada, data_devolucao)
+                VALUES (?, ?, ?, ?, ?)
             """, (
                 movimentacao.ferramenta_id,
                 movimentacao.matricula_id,
+                movimentacao.quantidade,
                 movimentacao.data_retirada,
                 movimentacao.data_devolucao
             ))
@@ -196,3 +212,23 @@ class MovimentacaoRepository:
                 AND data_devolucao IS NULL
             """, (data_devolucao, ferramenta_id))
 
+    def carregar_historico(self):
+        with Database.conectar() as con:
+            cursor = con.execute("""
+            SELECT
+                movimentacoes.id,
+                ferramentas.codigo,
+                ferramentas.descricao,
+                matriculas.matricula,
+                matriculas.nome,
+                movimentacoes.data_retirada,
+                movimentacoes.data_devolucao
+            FROM movimentacoes
+            JOIN ferramentas ON movimentacoes.ferramenta_id = ferramentas.id
+            JOIN matriculas ON movimentacoes.matricula_id = matriculas.id
+            ORDER BY movimentacoes.data_retirada DESC
+            LIMIT 20
+            """)
+
+
+            return cursor.fetchall()
