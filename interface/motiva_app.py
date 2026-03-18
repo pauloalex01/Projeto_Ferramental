@@ -491,14 +491,14 @@ class MotivaApp(customtkinter.CTk, LeitorCodigo, MovimentacaoService, MatriculaS
                 CTkMessagebox(title="Erro", message="Matricula não encontrada")
                 return None
             else:
-                identificacao, matricula, nome, status = busca
+                identificacao, matricula, nome, setor, status, = busca
 
                 if status == 1:
-                    CTkMessagebox(title="Sucesso", message=f"Matricula: {matricula}\nNome: {nome}\nStatus: Ativo")
+                    CTkMessagebox(title="Sucesso", message=f"Matricula: {matricula}\nNome: {nome}\nSetor: {setor}\nStatus: Ativo")
                     return None
 
                 elif status == 2:
-                    CTkMessagebox(title="Sucesso", message=f"Matricula: {matricula}\nNome: {nome}\nStatus: Desativo")
+                    CTkMessagebox(title="Sucesso", message=f"Matricula: {matricula}\nNome: {nome}\nSetor: {setor}\nStatus: Desativo")
                     return None
 
             return None
@@ -826,23 +826,12 @@ class MotivaApp(customtkinter.CTk, LeitorCodigo, MovimentacaoService, MatriculaS
 
                 if escolha == "Emprestar":
                     for codigo in codigos:
-                        self.emprestar_ferramenta()
+                        self.movimentacao.emprestar(matricula_codigo=matricula_emprestimo, ferramenta_codigo=codigo, quantidade="1")
 
                 else:
                     for codigo in codigos:
                         self.movimentacao.devolver(matricula=matricula_emprestimo, ferramenta=codigo)
 
-
-            """
-                if not self.ferramenta_repo.buscar_por_codigo(codigos):
-
-                    busca = self.matricula_repo.buscar_por_matricula_ativo(matricula_emprestimo)
-
-                    return print(busca) if busca else print(2)
-
-                else:
-                    CTkMessagebox(icon="error",message="Código não registrado")
-            """
         return None
 
 

@@ -1,16 +1,18 @@
 import sqlite3
-from pathlib import Path
+import os
 
-BASE_DIR = Path(__file__).resolve().parent.parent
-DB_PATH = BASE_DIR / 'data' / 'controle_ferramental.sqlite'
+
+def get_db_path():
+    pasta = os.path.join(os.environ["USERPROFILE"],"AppData","Local","ControleFerramental")
+    os.makedirs(pasta, exist_ok=True)
+    return os.path.join(pasta,"controle_ferramental.sqlite")
+
 
 class Database:
 
-
     @staticmethod
     def conectar():
-        DB_PATH.parent.mkdir(exist_ok=True)
-        con = sqlite3.connect(DB_PATH, timeout=5)
+        con = sqlite3.connect(get_db_path(), timeout=5)
         con.execute("PRAGMA foreign_keys = 1")
         return con
 

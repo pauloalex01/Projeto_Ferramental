@@ -28,4 +28,6 @@ def criar_codigo_barras(codigo):
 
     return f'Código de barras salvo em: {caminho_final}'
 
+criar_codigo_barras("000010002620")
+
 
