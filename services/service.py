@@ -175,10 +175,6 @@ class MovimentacaoService:
         if not ferramenta_id:
             return 2
 
-        quantidade = self.ferramenta_repo.buscar_por_quantidade(ferramenta_id)
-
-        if quantidade <= 0:
-            return 5  # sem ferramenta disponível
 
         if self.movimentacao_repo.buscar_movimentacao_aberta_ferramenta(ferramenta_id):
             return 3
@@ -186,19 +182,19 @@ class MovimentacaoService:
         data_retirada = datetime.now().strftime("%Y-%m-%d %H:%M:%S")
 
         movimentacao = Movimentacao(
-            ferramenta_id,
-            matricula_id,
-            data_retirada
-        )
+            ferramenta_id=ferramenta_id,
+            matricula_id=matricula_id,
+            quantidade = quantidade,
+            data_retirada=data_retirada)
 
         self.movimentacao_repo.salvar(movimentacao)
 
 
-        self.ferramenta_repo.diminuir_quantidade(ferramenta_id)
+        self.ferramenta_repo.diminuir_quantidade(ferramenta_id=ferramenta_id, quantidade=quantidade)
 
         return 4
 
-    def devolver(self, ferramenta, matricula):
+    def devolver(self, ferramenta, matricula, quantidade):
 
         matricula_id = self.buscar_matricula_id(matricula)
 
@@ -219,7 +215,7 @@ class MovimentacaoService:
 
         self.movimentacao_repo.registrar_devolucao(ferramenta_id, data_devolucao)
 
-        self.ferramenta_repo.aumentar_quantidade(ferramenta_id)
+        self.ferramenta_repo.aumentar_quantidade(ferramenta_id=ferramenta_id, quantidade=quantidade)
 
         return 4
 

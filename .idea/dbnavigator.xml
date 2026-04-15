@@ -100,7 +100,7 @@
           <protocol value="" />
           <url-parameters />
           <files>
-            <file path="C:\Projetos\projeto_ferramental\data\controle_ferramental.sqlite" schema="controle_ferramental" />
+            <file path="C:\Users\passp\AppData\Local\ControleFerramental\controle_ferramental.sqlite" schema="controle_ferramental" />
           </files>
           <type value="NONE" />
           <user value="" />

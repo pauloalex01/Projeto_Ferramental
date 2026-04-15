@@ -9,15 +9,16 @@ from tkinter import ttk
 
 class MotivaApp(customtkinter.CTk, LeitorCodigo, MovimentacaoService, MatriculaService, FerramentaService):
 
-    matricula_repo = MatriculaRepository()
-    ferramenta_repo = FerramentaRepository()
-    matricula = MatriculaService()
-    movimentacao = MovimentacaoService()
-    ferramenta = FerramentaService()
-    leitor = LeitorCodigo()
-
     def __init__(self):
         super().__init__()
+
+        self.movimentacao_repo = MatriculaRepository()
+        self.ferramenta_repo = FerramentaRepository()
+        self.matricula = MatriculaService()
+        self.movimentacao = MovimentacaoService()
+        self.ferramenta = FerramentaService()
+        self.leitor = LeitorCodigo()
+
         self.setup_window()
         self.setup_layout_grid()
         self.create_navigation_sidebar()
@@ -159,8 +160,8 @@ class MotivaApp(customtkinter.CTk, LeitorCodigo, MovimentacaoService, MatriculaS
 
         dados = self.movimentacao.carregar_historico()
 
-        for row in dados:
-            self.historico_tabela.insert("", "end", values=row)
+        for item in dados:
+            self.historico_tabela.insert("", "end", values=item)
 
     def setup_cadastro_frame(self):
         self.cadastro_frame = customtkinter.CTkFrame(self, corner_radius=0, fg_color="transparent")
@@ -412,7 +413,7 @@ class MotivaApp(customtkinter.CTk, LeitorCodigo, MovimentacaoService, MatriculaS
 
         if not matricula: return None
 
-        nome_data = self.matricula_repo.buscar_por_matricula(matricula)
+        nome_data = (self.movimentacao_repo.buscar_por_matricula(matricula))
 
         if nome_data:
             nome_atual = nome_data[2]
@@ -736,7 +737,14 @@ class MotivaApp(customtkinter.CTk, LeitorCodigo, MovimentacaoService, MatriculaS
 
         quantidade_input = customtkinter.CTkInputDialog(text="Digite a quantidade da ferramenta a ser emprestada:",
                                                        title="Empréstimo")
-        quantidade_emprestimo = quantidade_input.get_input()
+
+        valor = quantidade_input.get_input()
+
+        if not valor or not valor.isdigit():
+            CTkMessagebox(title="Erro", message="Quantidade inválida")
+            return None
+
+        quantidade_emprestimo = int(valor)
 
         emprestimo = self.movimentacao.emprestar(ferramenta_codigo=ferramenta_emprestada,
                                                  matricula_codigo=matricula_emprestimo,
@@ -771,9 +779,9 @@ class MotivaApp(customtkinter.CTk, LeitorCodigo, MovimentacaoService, MatriculaS
                                                        title="Devolução")
         quantidade_devolucao = quantidade_input.get_input()
 
-        devolucao = self.movimentacao.emprestar(ferramenta_codigo=ferramenta_devolucao,
-                                                 matricula_codigo=matricula_devolucao,
-                                                 quantidade=quantidade_devolucao)
+        devolucao = self.movimentacao.devolver(ferramenta=ferramenta_devolucao,
+                                               matricula=matricula_devolucao,
+                                               quantidade=int(quantidade_devolucao))
 
         if devolucao == 1:
 
@@ -826,11 +834,11 @@ class MotivaApp(customtkinter.CTk, LeitorCodigo, MovimentacaoService, MatriculaS
 
                 if escolha == "Emprestar":
                     for codigo in codigos:
-                        self.movimentacao.emprestar(matricula_codigo=matricula_emprestimo, ferramenta_codigo=codigo, quantidade="1")
+                        self.movimentacao.emprestar(matricula_codigo=matricula_emprestimo, ferramenta_codigo=codigo, quantidade=1)
 
                 else:
                     for codigo in codigos:
-                        self.movimentacao.devolver(matricula=matricula_emprestimo, ferramenta=codigo)
+                        self.movimentacao.devolver(matricula=matricula_emprestimo, ferramenta=codigo, quantidade=1)
 
         return None
 

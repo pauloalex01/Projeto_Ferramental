@@ -50,6 +50,7 @@ class Database:
             id INTEGER NOT NULL PRIMARY KEY AUTOINCREMENT,
             ferramenta_id INTEGER NOT NULL,
             matricula_id INTEGER NOT NULL,
+            quantidade INTEGER NOT NULL DEFAULT 1,
             data_retirada TEXT NOT NULL,
             data_devolucao TEXT,
             FOREIGN KEY (ferramenta_id) REFERENCES ferramentas(id),

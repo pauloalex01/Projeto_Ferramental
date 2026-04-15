@@ -1,5 +1,3 @@
-from sklearn.decomposition import non_negative_factorization
-
 from database.banco_de_dados import Database
 
 class FerramentaRepository:
@@ -49,7 +47,7 @@ class FerramentaRepository:
                 """, (codigo,))
                 qtd = cursor.fetchone()
                 if qtd:
-                    return qtd
+                    return int(qtd[0])
             return None
 
     def atualizar_descricao(self, codigo, nova_descricao):
@@ -85,25 +83,25 @@ class FerramentaRepository:
         with Database.conectar() as con:
             con.execute("""UPDATE ferramentas SET ativo = 1 WHERE codigo = ?""", (codigo,))
 
-    def diminuir_quantidade(self, ferramenta_id):
+    def diminuir_quantidade(self, ferramenta_id, quantidade):
 
         with Database.conectar() as con:
             cursor = con.cursor()
             cursor.execute("""
             UPDATE ferramentas
-            SET quantidade = quantidade - 1
+            SET quantidade = quantidade - ?
             WHERE id = ? AND quantidade > 0
-            """, (ferramenta_id,))
+            """, (quantidade, ferramenta_id))
 
-    def aumentar_quantidade(self, ferramenta_id):
+    def aumentar_quantidade(self, ferramenta_id, quantidade):
 
         with Database.conectar() as con:
             cursor = con.cursor()
             cursor.execute("""
             UPDATE ferramentas
-            SET quantidade = quantidade + 1
+            SET quantidade = quantidade + ?
             WHERE id = ? AND quantidade > 0
-            """, (ferramenta_id,))
+            """, (quantidade, ferramenta_id))
 
 
 class MatriculaRepository:
@@ -216,11 +214,9 @@ class MovimentacaoRepository:
         with Database.conectar() as con:
             cursor = con.execute("""
             SELECT
-                movimentacoes.id,
-                ferramentas.codigo,
                 ferramentas.descricao,
                 matriculas.matricula,
-                matriculas.nome,
+                movimentacoes.quantidade,
                 movimentacoes.data_retirada,
                 movimentacoes.data_devolucao
             FROM movimentacoes
