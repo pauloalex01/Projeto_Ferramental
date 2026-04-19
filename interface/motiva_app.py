@@ -5,7 +5,7 @@ from CTkMessagebox import CTkMessagebox
 from database.banco_de_dados import Database
 from frames.CadastroFrame import CadastroFrame
 from frames.MovimentacaoFrame import MovimentacaoFrame
-
+from frames.BuscarFrame import BuscaFrame
 
 class MotivaApp(customtkinter.CTk):
 
@@ -47,6 +47,9 @@ class MotivaApp(customtkinter.CTk):
         self.movimentacao_button = customtkinter.CTkButton(self.navigation_frame, text="Movimentação", command=self.movimentacao_button_event)
         self.movimentacao_button.grid(row=2, column=0, sticky="ew")
 
+        self.busca_button = customtkinter.CTkButton(self.navigation_frame, text="Busca", command=self.busca_button_event)
+        self.busca_button.grid(row=3, column=0, sticky="ew")
+
     def create_content_frames(self):
         self.home_frame = customtkinter.CTkFrame(self)
 
@@ -61,11 +64,18 @@ class MotivaApp(customtkinter.CTk):
             self.movimentacao
         )
 
+        self.busca_frame = BuscaFrame(
+            self,
+            self.matricula,
+            self.ferramenta
+        )
+
     def select_frame_by_name(self, name):
         frames = {
             "home": self.home_frame,
             "cadastro": self.cadastro_frame,
-            "movimentacao": self.movimentacao_frame
+            "movimentacao": self.movimentacao_frame,
+            "busca": self.busca_frame
         }
 
         for frame_name, frame in frames.items():
@@ -82,6 +92,9 @@ class MotivaApp(customtkinter.CTk):
 
     def movimentacao_button_event(self):
         self.select_frame_by_name("movimentacao")
+
+    def busca_button_event(self):
+        self.select_frame_by_name("busca")
 
 if __name__ == "__main__":
     database = Database()

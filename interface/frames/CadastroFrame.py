@@ -1,23 +1,36 @@
 import customtkinter
 
+from services.service import MatriculaService, FerramentaService
+
 
 class CadastroFrame(customtkinter.CTkFrame):
-    def __init__(self, master, matricula_service, ferramenta_service):
+    def __init__(self, master, matricula, ferramenta):
         super().__init__(master)
 
-        self.matricula_service = matricula_service
-        self.ferramenta_service = ferramenta_service
+        btn_args = {"fg_color": ("#4169E1", "#FFFFFF"), "text_color": ("#FFFFFF", "#1A1A1A"),
+                    "hover_color": ("#365BC9", "#CCCCCC")}
+
+        self.matricula_service = MatriculaService()
+        self.ferramenta_service = FerramentaService()
 
         self.tipo_cadastro = "ferramenta"
 
         self.grid_columnconfigure(0, weight=1)
 
+        self.label = customtkinter.CTkLabel(
+            self, text="Seção de Cadastro",
+            font=customtkinter.CTkFont(size=24, weight="bold"),
+            text_color=("#1A1A1A", "#FFFFFF")
+        )
+        self.label.grid(row=0, column=0, padx=20, pady=20)
+
         self.toggle_btn = customtkinter.CTkButton(
             self,
             text="Cadastrar: Ferramenta",
-            command=self.alternar_tipo
+            command=self.alternar_tipo,
+            **btn_args
         )
-        self.toggle_btn.grid(row=0, column=0, pady=10)
+        self.toggle_btn.grid(row=0, column=3, pady=10, padx=20)
 
         self.form_frame = customtkinter.CTkFrame(self)
         self.form_frame.grid(row=1, column=0, pady=10)
@@ -25,9 +38,10 @@ class CadastroFrame(customtkinter.CTkFrame):
         self.btn_salvar = customtkinter.CTkButton(
             self,
             text="Cadastrar",
-            command=self.cadastrar
+            command=self.cadastrar,
+            **btn_args
         )
-        self.btn_salvar.grid(row=2, column=0, pady=10)
+        self.btn_salvar.grid(row=2, column=0, pady=(10, 30))
 
         self.render_form()
 
@@ -45,38 +59,59 @@ class CadastroFrame(customtkinter.CTkFrame):
         for widget in self.form_frame.winfo_children():
             widget.destroy()
 
-        if self.tipo_cadastro == "ferramenta":
-            self.codigo_entry = customtkinter.CTkEntry(self.form_frame, placeholder_text="Código da Ferramenta")
-            self.codigo_entry.grid(row=0, column=0, pady=5)
+        entry_width = 300
 
-            self.descricao_entry = customtkinter.CTkEntry(self.form_frame, placeholder_text="Descrição")
-            self.descricao_entry.grid(row=1, column=0, pady=5)
+        if self.tipo_cadastro == "ferramenta":
+            self.codigo_entry = customtkinter.CTkEntry(self.form_frame,
+                                                       placeholder_text="Código da Ferramenta",
+                                                       width=entry_width,
+            )
+            self.codigo_entry.grid(row=0, column=0, pady=10, padx=20)
+
+            self.descricao_entry = customtkinter.CTkEntry(self.form_frame,
+                                                          placeholder_text="Descrição",
+                                                          width=entry_width,
+            )
+            self.descricao_entry.grid(row=1, column=0, pady=10, padx=20)
+
+            self.quantidade_entry = customtkinter.CTkEntry(self.form_frame,
+                                                          placeholder_text="Quantidade",
+                                                          width=entry_width,
+                                                          )
+            self.quantidade_entry.grid(row=2, column=0, pady=10, padx=20)
 
         else:
-            self.codigo_entry = customtkinter.CTkEntry(self.form_frame, placeholder_text="Código da Matrícula")
-            self.codigo_entry.grid(row=0, column=0, pady=5)
+            self.codigo_entry = customtkinter.CTkEntry(self.form_frame, placeholder_text="Código da Matrícula", width=entry_width)
+            self.codigo_entry.grid(row=0, column=0, pady=10, padx=20)
 
-            self.nome_entry = customtkinter.CTkEntry(self.form_frame, placeholder_text="Nome Completo")
-            self.nome_entry.grid(row=1, column=0, pady=5)
+            self.nome_entry = customtkinter.CTkEntry(self.form_frame, placeholder_text="Nome Completo", width=entry_width)
+            self.nome_entry.grid(row=1, column=0, pady=10, padx=20)
 
             setores = [
                 "Preventiva A", "Preventiva B", "Plantão A", "Plantão B",
-                "Plantão C", "Plantão D", "Reparo", "RG", "Auxiliares"
+                "Plantão C", "Plantão D", "Reparo", "RG", "Auxiliares", "MRO"
             ]
 
-            self.setor_dropdown = customtkinter.CTkOptionMenu(self.form_frame, values=setores)
+            self.setor_dropdown = customtkinter.CTkOptionMenu(
+                self.form_frame,
+                values=setores,
+                text_color=("#1A1A1A", "#FFFFFF"),
+                fg_color="#5E22F3",
+                width=entry_width,
+            )
             self.setor_dropdown.set("Selecione o Setor")
-            self.setor_dropdown.grid(row=2, column=0, pady=5)
+            self.setor_dropdown.grid(row=2, column=0, pady=10, padx=20)
 
     def cadastrar(self):
         if self.tipo_cadastro == "ferramenta":
             codigo = self.codigo_entry.get()
             descricao = self.descricao_entry.get()
+            quantidade = self.quantidade_entry.get()
 
             self.ferramenta_service.cadastrar(
                 codigo=codigo,
                 descricao=descricao,
-                quantidade=1
+                quantidade= quantidade
             )
 
         else:
