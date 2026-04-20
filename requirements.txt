@@ -4,3 +4,6 @@ python-barcode==0.16.1
 pyzbar==0.1.9
 CTKMessageBox==
 CustomTkinter==
+
+ctkmessagebox
+customtkinter
