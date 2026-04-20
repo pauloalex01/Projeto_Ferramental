@@ -1,9 +1,9 @@
 import customtkinter
 from codigo_barras.decoder_cam import LeitorCodigo
 from interface.frames import BuscaFrame
-from interface.frames import CadastroFrame
 from repositories.repositories import MatriculaRepository, FerramentaRepository
 from services.service import MatriculaService, FerramentaService, MovimentacaoService
+from frames import CadastroFrame
 from CTkMessagebox import CTkMessagebox
 from database.banco_de_dados import Database
 from tkinter import ttk
@@ -105,7 +105,7 @@ class MotivaApp(customtkinter.CTk, LeitorCodigo, MovimentacaoService, MatriculaS
 
         self.leitor_codigo_button = customtkinter.CTkButton(text="Leitor de Código",
                                                             command=self.leitor_codigo_button_event, **common_args)
-        self.leitor_codigo_button.grid(row=5, column=0, sticky="ew")
+        self.leitor_codigo_button.grid(row=6, column=0, sticky="ew")
 
     def create_content_frames(self):
         """Inicializa todos os frames de conteúdo."""
@@ -296,6 +296,22 @@ class MotivaApp(customtkinter.CTk, LeitorCodigo, MovimentacaoService, MatriculaS
 
         return None
 
+    def buscar_home(self):
+
+        opcao_input = CTkMessagebox(message="Deseja buscar a matrícula ou a ferramenta",
+                                                   title="Buscar",
+                                                   icon="question",
+                                                   option_1="Matrícula",
+                                                   option_2="Ferramenta")
+        opcao_cadastro = opcao_input.get()
+
+        if not opcao_cadastro: return None
+
+        elif opcao_cadastro == "Matrícula": return self.buscar_matricula()
+        elif opcao_cadastro == "Ferramenta": return self.buscar_ferramenta()
+
+        return None
+
     def ativar_home(self):
 
         opcao_input = CTkMessagebox(message="Deseja ativar a matrícula ou a ferramenta",
@@ -379,6 +395,43 @@ class MotivaApp(customtkinter.CTk, LeitorCodigo, MovimentacaoService, MatriculaS
                 return None
         else:
             CTkMessagebox(title="Cancelado", message="Desativação foi cancelada")
+            return None
+
+    def buscar_matricula(self):
+
+        matricula_input = customtkinter.CTkInputDialog(text="Digite a matrícula a ser procurada:",
+                                                       title="Busca de Matrícula")
+        matricula_busca = matricula_input.get_input()
+
+        if not matricula_busca: return None
+
+        mensagem = CTkMessagebox(title="Confirmação",
+                                 message=f"Deseja buscar a Matricula: {matricula_busca}?",
+                                 icon="question",
+                                 option_1="Sim",
+                                 option_2="Não")
+
+        if mensagem.get() == "Sim":
+            busca = self.matricula.buscar(matricula_busca)
+
+            if busca == 1:
+                CTkMessagebox(title="Erro", message="Matricula não encontrada")
+                return None
+            else:
+                identificacao, matricula, nome, setor, status, = busca
+
+                if status == 1:
+                    CTkMessagebox(title="Sucesso", message=f"Matricula: {matricula}\nNome: {nome}\nSetor: {setor}\nStatus: Ativo")
+                    return None
+
+                elif status == 2:
+                    CTkMessagebox(title="Sucesso", message=f"Matricula: {matricula}\nNome: {nome}\nSetor: {setor}\nStatus: Desativo")
+                    return None
+
+            return None
+
+        else:
+            CTkMessagebox(title="Cancelado", message="Busca foi cancelada")
             return None
 
     def ativar_matricula(self):
@@ -484,6 +537,41 @@ class MotivaApp(customtkinter.CTk, LeitorCodigo, MovimentacaoService, MatriculaS
                 return None
         else:
             CTkMessagebox(title="Cancelado", message="Desativação foi cancelada")
+            return None
+
+
+    def buscar_ferramenta(self):
+
+        ferramenta_input = customtkinter.CTkInputDialog(text="Digite o código da ferramenta a ser procurada:",
+                                                       title="Busca de Ferramenta")
+        ferramenta_input = ferramenta_input.get_input()
+
+        if not ferramenta_input: return None
+
+        mensagem = CTkMessagebox(title="Confirmação",
+                                 message=f"Deseja buscar a ferramenta: {ferramenta_input}?",
+                                 icon="question",
+                                 option_1="Sim",
+                                 option_2="Não")
+
+        if mensagem.get() == "Sim":
+            busca = self.ferramenta.buscar(ferramenta_input)
+
+            if busca == 1:
+                CTkMessagebox(title="Erro", message="Ferramenta não encontrada")
+                return None
+            else:
+                identificacao, codigo, descricao, status, quantidade, ativo = busca
+
+                if ativo == 1:
+                    CTkMessagebox(title="Sucesso", message=f"Código: {codigo}\nDescrição: {descricao}\nQuantidade: {quantidade}\nStatus: Ativo")
+                    return busca
+                elif ativo == 0:
+                    CTkMessagebox(title="Sucesso", message=f"Código: {codigo}\nDescrição: {descricao}\nQuantidade: {quantidade}\nStatus: Desativo")
+                    return busca
+                return None
+        else:
+            CTkMessagebox(title="Cancelado", message="Busca foi cancelada")
             return None
 
     def ativar_ferramenta(self):

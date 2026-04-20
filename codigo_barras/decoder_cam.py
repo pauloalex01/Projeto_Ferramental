@@ -61,7 +61,7 @@ class LeitorCodigo:
         except Exception as e:
             print(f"Ocorreu um erro durante a leitura: {e}")
         finally:
-            return self.fechar_camera()
+            self.fechar_camera()
 
     def fechar_camera(self) -> List[str]:
         """Libera a câmera e destrói as janelas do OpenCV, retornando os códigos lidos."""

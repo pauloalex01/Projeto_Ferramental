@@ -15,11 +15,12 @@ class Matricula:
 
 
 class Movimentacao:
-    def __init__(self, ferramenta_id, matricula_id, data_retirada, data_devolucao=None):
+    def __init__(self, ferramenta_id, matricula_id, quantidade, data_retirada, data_devolucao=None):
         self.ferramenta_id = ferramenta_id
         self.matricula_id = matricula_id
         self.data_retirada = data_retirada
         self.data_devolucao = data_devolucao
+        self.quantidade = quantidade
 
     def esta_aberta(self):
         return self.data_devolucao is None
