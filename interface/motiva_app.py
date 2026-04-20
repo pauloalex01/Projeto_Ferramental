@@ -1,7 +1,6 @@
 import customtkinter
 from codigo_barras.decoder_cam import LeitorCodigo
-from interface.frames import BuscaFrame
-from interface.frames import CadastroFrame
+from interface.frames import BuscaFrame, CadastroFrame
 from repositories.repositories import MatriculaRepository, FerramentaRepository
 from services.service import MatriculaService, FerramentaService, MovimentacaoService
 from CTkMessagebox import CTkMessagebox
