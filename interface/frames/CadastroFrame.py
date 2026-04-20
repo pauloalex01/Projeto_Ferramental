@@ -111,7 +111,7 @@ class CadastroFrame(customtkinter.CTkFrame):
             self.setor_dropdown = customtkinter.CTkOptionMenu(
                 self.form_frame,
                 values=setores,
-                text_color=("#1A1A1A", "#FFFFFF"),
+                text_color=("#FFFFFF", "#FFFFFF"),
                 fg_color="#5E22F3",
                 width=entry_width,
                 height=entry_height,

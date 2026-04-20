@@ -20,16 +20,11 @@ class BuscaFrame(customtkinter.CTkFrame):
             font=customtkinter.CTkFont(size=24, weight="bold"),
             text_color=("#1A1A1A", "#FFFFFF")
         )
-        self.label.grid(row=0, column=0, padx=20, pady=20)
-
-        # container central
-        self.container = customtkinter.CTkFrame(self, fg_color='transparent')
-        self.container.grid(row=0, column=0, sticky="nsew")
-        self.container.grid_columnconfigure(0, weight=1)
+        self.label.grid(row=0, column=0, padx=40, pady=20, )
 
         # botão toggle
         self.toggle_btn = customtkinter.CTkButton(
-            self.container,
+            self,
             text="Buscar: Ferramenta",
             command=self.alternar_tipo,
             **btn_args
@@ -37,21 +32,21 @@ class BuscaFrame(customtkinter.CTkFrame):
         self.toggle_btn.grid(row=0, column=3, pady=(30, 10), padx=20)
 
         # form
-        self.form_frame = customtkinter.CTkFrame(self.container)
-        self.form_frame.grid(row=1, column=0, pady=10)
+        self.form_frame = customtkinter.CTkFrame(self)
+        self.form_frame.grid(row=2, column=0, pady=10)
 
         # botão buscar
         self.btn_buscar = customtkinter.CTkButton(
-            self.container,
+            self,
             text="Buscar",
             command=self.buscar,
             **btn_args
         )
-        self.btn_buscar.grid(row=2, column=0, pady=(10, 20))
+        self.btn_buscar.grid(row=3, column=0, pady=(10, 30))
 
         # resultado
-        self.resultado = customtkinter.CTkTextbox(self.container, width=400, height=80)
-        self.resultado.grid(row=3, column=0, padx=20, pady=(10, 30))
+        self.resultado = customtkinter.CTkTextbox(self, width=600, height=150, font=customtkinter.CTkFont(size=22, weight="bold"))
+        self.resultado.grid(row=4, column=0, pady=(10, 30))
 
         self.render_form()
 
@@ -69,23 +64,26 @@ class BuscaFrame(customtkinter.CTkFrame):
         for widget in self.form_frame.winfo_children():
             widget.destroy()
 
-        entry_width = 300
+        entry_width = 600
+        entry_height = 40
 
         if self.tipo_busca == "ferramenta":
             self.input_busca = customtkinter.CTkEntry(
                 self.form_frame,
                 placeholder_text="Código ou Descrição",
-                width=entry_width
+                width=entry_width,
+                height=entry_height
             )
-            self.input_busca.grid(row=0, column=0, pady=10, padx=20)
+            self.input_busca.grid(row=0, column=0, pady=10)
 
         else:
             self.input_busca = customtkinter.CTkEntry(
                 self.form_frame,
                 placeholder_text="Matrícula ou Nome",
-                width=entry_width
+                width=entry_width,
+                height=entry_height
             )
-            self.input_busca.grid(row=0, column=0, pady=10, padx=20)
+            self.input_busca.grid(row=0, column=0, pady=10)
 
     def buscar(self):
         valor = self.input_busca.get().strip()
@@ -120,7 +118,7 @@ class BuscaFrame(customtkinter.CTkFrame):
             if resultado == 1 or not resultado:
                 self.resultado.insert("end", "Matrícula não encontrada.")
             else:
-                _, matricula, nome, setor, status = resultado
+                _, matricula, nome, status, setor = resultado
 
                 status_txt = "Ativo" if status == 1 else "Desativado"
 

@@ -1,5 +1,6 @@
 import customtkinter
 from codigo_barras.decoder_cam import LeitorCodigo
+from interface.frames import BuscaFrame
 from repositories.repositories import MatriculaRepository, FerramentaRepository
 from services.service import MatriculaService, FerramentaService, MovimentacaoService
 from frames import CadastroFrame
@@ -59,7 +60,7 @@ class MotivaApp(customtkinter.CTk, LeitorCodigo, MovimentacaoService, MatriculaS
         # Controle de aparência
         self.appearance_mode_label = customtkinter.CTkLabel(
             self.navigation_frame, text="Modo de Aparência:", anchor="w",
-            text_color=("#1A1A1A", "#FFFFFF")
+            text_color=("#FFFFFF", "#FFFFFF")
         )
         self.appearance_mode_label.grid(row=6, column=0, padx=20, pady=(10, 0))
 
@@ -94,18 +95,23 @@ class MotivaApp(customtkinter.CTk, LeitorCodigo, MovimentacaoService, MatriculaS
         self.cadastro_button = customtkinter.CTkButton(text="Cadastro", command=self.cadastro_button_event, **common_args)
         self.cadastro_button.grid(row=2, column=0, sticky="ew")
 
+        self.busca_button = customtkinter.CTkButton(text="Busca", command=self.busca_button_event,
+                                                       **common_args)
+        self.busca_button.grid(row=3, column=0, sticky="ew")
+
         self.movimentacao_button = customtkinter.CTkButton(text="Movimentação", command=self.movimentacao_button_event,
                                                            **common_args)
-        self.movimentacao_button.grid(row=3, column=0, sticky="ew")
+        self.movimentacao_button.grid(row=4, column=0, sticky="ew")
 
         self.leitor_codigo_button = customtkinter.CTkButton(text="Leitor de Código",
                                                             command=self.leitor_codigo_button_event, **common_args)
-        self.leitor_codigo_button.grid(row=5, column=0, sticky="ew")
+        self.leitor_codigo_button.grid(row=6, column=0, sticky="ew")
 
     def create_content_frames(self):
         """Inicializa todos os frames de conteúdo."""
         self.setup_home_frame()
         self.setup_cadastro_frame()
+        self.setup_busca_frame()
         self.setup_movimentacao_frame()
         self.setup_leitor_codigo_frame()
 
@@ -169,6 +175,11 @@ class MotivaApp(customtkinter.CTk, LeitorCodigo, MovimentacaoService, MatriculaS
 
         self.cadastro_frame.grid(row=0, column=1, sticky="nsew")
 
+    def setup_busca_frame(self):
+
+        self.busca_frame = BuscaFrame(self, self.matricula, self.ferramenta)
+        self.busca_frame.grid(row=1, column=1, sticky="nsew")
+
     def setup_movimentacao_frame(self):
         self.movimentacao_frame = customtkinter.CTkFrame(self, corner_radius=0, fg_color="transparent")
         self.movimentacao_frame.grid_columnconfigure(0, weight=1)
@@ -222,6 +233,7 @@ class MotivaApp(customtkinter.CTk, LeitorCodigo, MovimentacaoService, MatriculaS
         frames = {
             "home": self.home_frame,
             "cadastro": self.cadastro_frame,
+            "busca": self.busca_frame,
             "movimentacao": self.movimentacao_frame,
             "leitor_codigo": self.leitor_codigo_frame
         }
@@ -238,6 +250,9 @@ class MotivaApp(customtkinter.CTk, LeitorCodigo, MovimentacaoService, MatriculaS
     def cadastro_button_event(self):
         self.select_frame_by_name("cadastro")
 
+    def busca_button_event(self):
+        self.select_frame_by_name("busca")
+
     def movimentacao_button_event(self):
         self.select_frame_by_name("movimentacao")
 
@@ -249,23 +264,6 @@ class MotivaApp(customtkinter.CTk, LeitorCodigo, MovimentacaoService, MatriculaS
         customtkinter.set_appearance_mode(new_appearance_mode)
 
     # Métodos de serviço (Lógica de Negócio)
-
-    def cadastrar_home(self):
-
-        opcao_input = CTkMessagebox(message="Deseja cadastrar a matrícula ou a ferramenta",
-                                                   title="Cadastro",
-                                                   icon="question",
-                                                   option_1="Matrícula",
-                                                   option_2="Ferramenta")
-        opcao_cadastro = opcao_input.get()
-
-        if not opcao_cadastro: return None
-
-        elif opcao_cadastro == "Matrícula": return self.cadastrar_matricula()
-        elif opcao_cadastro == "Ferramenta": return self.cadastrar_ferramenta()
-
-        return None
-
     def atualizar_home(self):
 
         opcao_input = CTkMessagebox(message="Deseja atualizar a matrícula ou a ferramenta",
@@ -367,7 +365,6 @@ class MotivaApp(customtkinter.CTk, LeitorCodigo, MovimentacaoService, MatriculaS
         else:
             CTkMessagebox(title="Cancelado", message="Atualização foi cancelada")
             return None
-
 
 
     def remover_matricula(self):
@@ -714,7 +711,7 @@ class MotivaApp(customtkinter.CTk, LeitorCodigo, MovimentacaoService, MatriculaS
 
                 else:
                     for codigo in codigos:
-                        self.movimentacao.devolver(matricula=matricula_emprestimo, ferramenta=codigo)
+                        self.movimentacao.devolver(matricula=matricula_emprestimo, ferramenta=codigo, quantidade=1)
 
         return None
 
