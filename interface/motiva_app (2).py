@@ -333,49 +333,6 @@ class MotivaApp(customtkinter.CTk, LeitorCodigo, MovimentacaoService, MatriculaS
 
         return None
 
-    def cadastrar_matricula(self):
-
-        matricula_input = customtkinter.CTkInputDialog(text="Digite sua matrícula:", title="Cadastro de Matrícula")
-        matricula_cadastro = matricula_input.get_input()
-
-        if not matricula_cadastro: return None
-
-        nome_input = customtkinter.CTkInputDialog(text="Digite seu nome:", title="Cadastro de Matrícula")
-        nome_cadastro = nome_input.get_input()
-
-        if not nome_cadastro: return None
-
-        setor_input = customtkinter.CTkInputDialog(text="Digite o setor:", title="Cadastro de Matrícula")
-        setor_cadastro = setor_input.get_input()
-
-        if not setor_cadastro: return None
-
-
-        mensagem = CTkMessagebox(title="Confirmação",
-                                 message=f"Matricula: {matricula_cadastro},\nNome: {nome_cadastro},\nSetor: {setor_cadastro}",
-                                 icon="question",
-                                 option_1="Sim",
-                                 option_2="Não")
-
-        if mensagem.get() == "Sim":
-            busca = self.matricula.cadastrar(matricula_str=matricula_cadastro, nome=nome_cadastro, setor=setor_cadastro)
-            if busca == 1:
-                CTkMessagebox(title="Cancelado",
-                              message=f"Matricula: {matricula_cadastro} já existente e ativa no sistema")
-                return None
-
-            elif busca == 2:
-                CTkMessagebox(title="Cancelado",
-                              message=f"Matricula: {matricula_cadastro} já existente, porém desativada")
-                return None
-            else:
-                CTkMessagebox(title="Sucesso", message=f"Matricula: {matricula_cadastro} cadastrada com sucesso")
-                return None
-        else:
-            CTkMessagebox(title="Cancelado", message="Cadastro Cancelado")
-            return None
-
-
     def atualizar_matricula(self):
         matricula_input = customtkinter.CTkInputDialog(text="Digite a matrícula cujo nome será atualizado:",
                                                        title="Mudança de nome")
@@ -410,6 +367,8 @@ class MotivaApp(customtkinter.CTk, LeitorCodigo, MovimentacaoService, MatriculaS
         else:
             CTkMessagebox(title="Cancelado", message="Atualização foi cancelada")
             return None
+
+
 
     def remover_matricula(self):
         matricula_input = customtkinter.CTkInputDialog(text="Digite a matrícula a ser desativada:",
@@ -508,52 +467,6 @@ class MotivaApp(customtkinter.CTk, LeitorCodigo, MovimentacaoService, MatriculaS
                 return None
         else:
             CTkMessagebox(title="Cancelado", message="Ativação foi cancelada")
-            return None
-
-    def cadastrar_ferramenta(self):
-
-        ferramenta_input = customtkinter.CTkInputDialog(text="Digite o código da ferramenta:", title="Cadastro de Ferramenta")
-        ferramenta_cadastro = ferramenta_input.get_input()
-
-        if not ferramenta_cadastro: return None
-
-        descricao_input = customtkinter.CTkInputDialog(text="Digite a descrição da ferramenta:", title="Cadastro de Ferramenta")
-        descricao_cadastro = descricao_input.get_input()
-
-        if not descricao_cadastro: return None
-
-        quantidade_input = customtkinter.CTkInputDialog(text="Digite a quantidade da ferramenta:",
-                                                       title="Cadastro de Ferramenta")
-        quantidade_cadastro = quantidade_input.get_input()
-
-        if not quantidade_cadastro: return None
-
-        mensagem = CTkMessagebox(title="Confirmação",
-                                 message=f"Ferramenta: {ferramenta_cadastro},\nDescrição: {descricao_cadastro}, \nQuantidade: {quantidade_cadastro}",
-                                 icon="question",
-                                 option_1="Sim",
-                                 option_2="Não")
-
-        if mensagem.get() == "Sim":
-            busca = self.ferramenta.cadastrar(codigo=ferramenta_cadastro,
-                                              descricao=descricao_cadastro,
-                                              quantidade=quantidade_cadastro)
-            if busca == 1:
-                CTkMessagebox(title="Cancelado",
-                              message=f"{descricao_cadastro} já existente e ativa no sistema")
-                return None
-
-            elif busca == 2:
-                CTkMessagebox(title="Cancelado",
-                              message=f"{descricao_cadastro} já existente, porém desativada")
-                return None
-
-            else:
-                CTkMessagebox(title="Sucesso", message=f"{descricao_cadastro} cadastrado(a) com sucesso")
-                return None
-
-        else:
-            CTkMessagebox(title="Cancelado", message="Cadastro Cancelado")
             return None
 
     def atualizar_ferramenta(self):

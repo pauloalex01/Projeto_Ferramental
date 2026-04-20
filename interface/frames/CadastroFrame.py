@@ -1,4 +1,5 @@
 import customtkinter
+from CTkMessagebox import CTkMessagebox
 
 from services.service import MatriculaService, FerramentaService
 
@@ -124,19 +125,47 @@ class CadastroFrame(customtkinter.CTkFrame):
             descricao = self.descricao_entry.get()
             quantidade = self.quantidade_entry.get()
 
-            self.ferramenta_service.cadastrar(
-                codigo=codigo,
-                descricao=descricao,
-                quantidade= quantidade
-            )
+            self.cadastrar_ferramenta(ferramenta=codigo, descricao=descricao, quantidade=quantidade)
 
         else:
             codigo = self.codigo_entry.get()
             nome = self.nome_entry.get()
             setor = self.setor_dropdown.get()
 
-            self.matricula_service.cadastrar(
-                matricula_str=codigo,
-                nome=nome,
-                setor=setor
-            )
+            self.cadastrar_matricula(matricula_cadastro=codigo, nome_cadastro=nome,setor_cadastro=setor)
+
+    def cadastrar_ferramenta(self, ferramenta, descricao, quantidade):
+
+        cadastro = self.ferramenta_service.cadastrar(codigo=ferramenta,
+                                          descricao=descricao,
+                                          quantidade=quantidade)
+        if cadastro == 1:
+            CTkMessagebox(title="Cancelado",
+                          message=f"{descricao} já existente e ativa no sistema")
+            return None
+
+        elif cadastro == 2:
+            CTkMessagebox(title="Cancelado",
+                          message=f"{descricao} já existente, porém desativada")
+            return None
+
+        else:
+            CTkMessagebox(title="Sucesso", message=f"{descricao} cadastrado(a) com sucesso")
+            return None
+
+    def cadastrar_matricula(self, matricula_cadastro, nome_cadastro, setor_cadastro):
+
+        cadastro = self.matricula_service.cadastrar(matricula_str=matricula_cadastro, nome=nome_cadastro, setor=setor_cadastro)
+
+        if cadastro == 1:
+            CTkMessagebox(title="Cancelado",
+                          message=f"Matricula: {matricula_cadastro} já existente e ativa no sistema")
+            return None
+
+        elif cadastro == 2:
+            CTkMessagebox(title="Cancelado",
+                          message=f"Matricula: {matricula_cadastro} já existente, porém desativada")
+            return None
+        else:
+            CTkMessagebox(title="Sucesso", message=f"Matricula: {matricula_cadastro} cadastrada com sucesso")
+            return None
